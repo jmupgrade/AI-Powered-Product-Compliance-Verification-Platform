@@ -11,7 +11,7 @@ Automated tool that compares Purchase Orders (POs) against physical care labels 
 - Two care label input modes: structured per-label text with keyword validation, or raw STYLE#-delimited blob (Chinese/bilingual format)
 - Correctly handles the raw care label format where sizes appear **before** the STYLE# marker, not after
 - Normalizes all size variants to canonical form: `S/P → S`, `M/M → M`, `L/G → L`, `XS/TP → XS`, `SMALL → S`, `MEDIUM → M`, `LARGE → L`, `30*40 → 30x40`, etc.
-- Supports both style number formats: standard (`HS40022BU`) and hyphenated (`PJ60325-BE`)
+- Supports both style number formats: standard (`PQ12345AB`) and hyphenated (`ST54321-CD`)
 - Care label gate: scores text against English/French/Spanish wash-instruction keywords to detect non-care-label attachments
 - Enforced halt rules: PO number mismatch, non-care-label file, missing style #, generic labels with no style #
 - Three output formats: plain text, Markdown table, JSON
@@ -26,7 +26,7 @@ cd <your-project-folder>
 python3 po_carelabel_verification_system.py
 ```
 
-Running the file directly executes the built-in demo using PO 9648 data.
+Running the file directly executes the built-in demo using PO 0001 data.
 
 ## Usage in Your Own Code
 
@@ -35,19 +35,19 @@ from po_carelabel_verification_system import run_verification
 
 # Option A — raw care label blob (STYLE# delimited, bilingual/Chinese format)
 result = run_verification(
-    requested_po="9648",
-    po_pages=["PO # 0000009648 HS40022BU SMALL MEDIUM LARGE QTY: 1304 ..."],
-    label_raw_text="正 1304 PCS S/P M/M L/G\nSTYLE# HS40022BU\n...",
+    requested_po="0001",
+    po_pages=["PO # 0000000001 PQ12345AB SMALL MEDIUM LARGE QTY: 1304 ..."],
+    label_raw_text="正 1304 PCS S/P M/M L/G\nSTYLE# PQ12345AB\n...",
     output_format="text",   # or "markdown" / "json" / "all"
 )
 
 # Option B — individual care label files (each text block validated as a care label)
 result = run_verification(
-    requested_po="9648",
+    requested_po="0001",
     po_full_text="<full concatenated PO text with Page N of N markers>",
     label_texts=[
-        ("MACHINE WASH COLD ... STYLE# HS40022BU ... S/P M/M L/G", "label_HS40022BU.pdf"),
-        ("MACHINE WASH COLD ... STYLE# SW24004BU ... S/P M/M L/G", "label_SW24004BU.pdf"),
+        ("MACHINE WASH COLD ... STYLE# PQ12345AB ... S/P M/M L/G", "label_PQ12345AB.pdf"),
+        ("MACHINE WASH COLD ... STYLE# AC54321YZ ... S/P M/M L/G", "label_AC54321YZ.pdf"),
     ],
     output_format="markdown",
 )
